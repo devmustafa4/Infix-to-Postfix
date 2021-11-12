@@ -111,7 +111,7 @@ string infixToPostfix(string infix) {
         string current = "";
         current += infix[i];
  
-        if(isDigit)
+        if(isDigit(infix[i]))
             postfix += current;
  
         else if(infix[i] == '(')
@@ -169,6 +169,39 @@ int performOperation(int left, int right, char operation)
     }
 }
 
+int toInteger(string intstring)
+{
+    int number = 0;
+    for (int i=0; i<intstring.length();i++)
+    {
+        int integer = 0;
+        switch(intstring[i])
+        {
+            case '1':   integer = 1;
+                        break;
+            case '2':   integer = 2;
+                        break;
+            case '3':   integer = 3;
+                        break;
+            case '4':   integer = 4;
+                        break;
+            case '5':   integer = 5;
+                        break;
+            case '6':   integer = 6;
+                        break;
+            case '7':   integer = 7;
+                        break;
+            case '8':   integer = 8;
+                        break;
+            case '9':   integer = 9;
+                        break;
+            default:   integer = 0;
+        }
+        number = number * 10 + integer;
+    }
+    return number;
+}
+
 int evaluatePostFix(string postfix)
 {   
     string prev = "";
@@ -178,33 +211,31 @@ int evaluatePostFix(string postfix)
     {
         if (isDigit(postfix[i]) && isDigit(postfix[i-1]))
         {
+            stack.pop();
             prev += postfix[i];
+            stack.push(prev);
         }
         else if (isDigit(postfix[i]))
         {
-            prev = postfix[i];
+            prev = "";
+            prev += postfix[i];
+            stack.push(prev);
         }
         else if (postfix[i] == ' ')
         {
-            stack.push(prev);
             prev = "";
         }
         else if (isOperator(postfix[i]))
         {
-
-            int left;
-            stringstream stream2(stack.peak());
-            stream2 >> left;            
+            int right = toInteger(stack.peak());
             stack.pop();
 
+            int left = toInteger(stack.peak());
+            stack.pop();
 
-            int right;
-            stringstream stream1(prev);
-            stream1 >> right;            
-            prev = "";
-            
             result = performOperation(left, right, postfix[i]);
             stack.push(to_string(result));
+            prev = "";
         }
         
     }
@@ -213,9 +244,9 @@ int evaluatePostFix(string postfix)
 
 int main()
 {
-    string infix = "(12+28)*(31+42)";
+    string infix = "(12+28)*(31+42)+7-9";
     cout<<infix<<endl<<endl;
     string postfix = infixToPostfix(infix);
     cout<<postfix<<endl;
-    cout<<evaluatePostFix(postfix);
+    cout<<evaluatePostFix(postfix)<<endl<<endl;
 }

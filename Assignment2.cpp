@@ -1,5 +1,6 @@
 #include <iostream>
 #include <cmath>
+#include <bits/stdc++.h>
 
 using std::cout;
 using std::string;
@@ -133,12 +134,12 @@ class InfixToPostFix{
         return 0;
     }
 
-    int performOperation(int left, int right, char operation)
+    double performOperation(double left, double right, char operation)
     {
         switch(operation)
         {
             case '^':
-                return pow(double(left),double(right));
+                return pow(left, right);
             case '+':
                 return left + right;
             case '-':
@@ -150,39 +151,6 @@ class InfixToPostFix{
             default:
                 return 0;
         }
-    }
-
-    int toInteger(string intstring)
-    {
-        int number = 0;
-        for (int i=0; i<intstring.length();i++)
-        {
-            int integer = 0;
-            switch(intstring[i])
-            {
-                case '1':   integer = 1;
-                            break;
-                case '2':   integer = 2;
-                            break;
-                case '3':   integer = 3;
-                            break;
-                case '4':   integer = 4;
-                            break;
-                case '5':   integer = 5;
-                            break;
-                case '6':   integer = 6;
-                            break;
-                case '7':   integer = 7;
-                            break;
-                case '8':   integer = 8;
-                            break;
-                case '9':   integer = 9;
-                            break;
-                default:   integer = 0;
-            }
-            number = number * 10 + integer;
-        }
-        return number;
     }
 
     bool valid_num_of_Brackets(string input)
@@ -229,10 +197,10 @@ class InfixToPostFix{
     // checks the number of operators and operands in the infix string
     bool valid_num_of_Operators(string infix)
     {
+        string lastdigit = "";
         string prev = "";
-        Stack stack;
         
-        if (isOperator(infix[0]) || isOperator(infix[infix.length()-1]))
+        if (isOperator(infix[infix.length()-1]))
             return false;
         
         // convert the stirng to stack
@@ -240,30 +208,43 @@ class InfixToPostFix{
         {
             if (isDigit(infix[i]) && isDigit(infix[i-1]))
             {
-                stack.pop();
-                prev += infix[i];
-                stack.push(prev);
+                lastdigit += infix[i];
+                prev = lastdigit;
             }
             else if (isDigit(infix[i]))
             {
-                prev = "";
-                prev += infix[i];
-                stack.push(prev);
+                lastdigit = "";
+                lastdigit += infix[i];
+                prev = lastdigit;
             }
             else if (infix[i] == ' ')
             {
-                prev = "";
+                lastdigit = "";
             }
             else if (isOperator(infix[i]))
             {
-                if (isOperator(stack.peak()[0]))
+                if (i == 0 && !((infix[i] == '+')||(infix[i] == '-')))
+                    return false;
+
+                if(prev == "(")
+                {
+                    if (!((infix[i] == '+')||(infix[i] == '-')))
+                    {
+                        return false;
+                    }
+                }
+                else if (isOperator(prev[0]))
                 {
                     return false;
                 }
-                else
-                {
-                    stack.push(infix[i]);
-                }
+
+                prev = "";
+                prev += infix[i];
+            }
+            else 
+            {
+                prev = "";
+                prev += infix[i];
             }
         }
         return true;
@@ -276,21 +257,20 @@ class InfixToPostFix{
         if ((infix == "")||(infix == " "))
             throw "Infix string cannot be empty";
         // infix string should not begin with operator
-        if (isOperator(infix[0]))
+        if (isOperator(infix[0])&& !(infix[0] != '+' || infix[0] != '-'))
             throw "Infix string cannot begin with an operator";
         // infix string should have valid number of braces
         if (!valid_num_of_Brackets(infix))
             throw "Infix string contains invalid number of brackets";
         // infix string should not have invalid characters
         if (!valid_Characters(infix))
-            throw "Infix string contains invalid characters\nNote that special only numbers, operators (+,-,*,/) and brackets ('()')";
+            throw "Infix string contains invalid characters\nNote that special only numbers, operators (+,-,*,/,^) and brackets ('()')";
         // infix string should have number of operators (two operators for every operand)
         if (!valid_num_of_Operators(infix))
             throw "Infix string contains invalid number of operators and operands";
     }
 
     public:
-    
     void setInfix(string input)
     {
         infix = input;
@@ -303,6 +283,7 @@ class InfixToPostFix{
 
         Stack stack;
         string postfix;
+        char prev = ' ';
     
         for(int i = 0; i < infix.length(); i++) 
         {
@@ -313,7 +294,7 @@ class InfixToPostFix{
             // for digit append to the output string
             if(isDigit(infix[i]))
                 postfix += current;
-    
+
             // for opening brace push to the stack
             else if(infix[i] == '(')
                 stack.push("(");
@@ -332,6 +313,8 @@ class InfixToPostFix{
             // on operator compare precedence and push the operator to stack
             else if (isOperator(infix[i]))
             {
+                if (((stack.peak() == "(")||(postfix==""))&&(infix[i]=='+'||infix[i]=='-')&&(prev == '('||prev==' '))
+                    postfix += "0";
                 // on equal precendance remove previous operator and add current to the stack
                 while(stack.peak() != "" && getPrecedance(infix[i]) <= getPrecedance(stack.peak()[0])) {
                     postfix += stack.peak();
@@ -339,6 +322,10 @@ class InfixToPostFix{
                 }
                 stack.push(current);
                 postfix += " ";
+            }
+            if (infix[i] != ' ')
+            {
+                prev = infix[i];
             }
 
         }
@@ -353,13 +340,13 @@ class InfixToPostFix{
     }
 
     // evalutes the postfix expression and returns the result
-    int evaluatePostFix()
+    double evaluatePostFix()
     {   
         validateInfix();
         string postfix = infixToPostfix();
         string prev = "";
         Stack stack;
-        int result = 0;
+        double result = 0;
         for (int i=0; i < postfix.length(); i++)
         {
             if (isDigit(postfix[i]) && isDigit(postfix[i-1]))
@@ -380,17 +367,16 @@ class InfixToPostFix{
             }
             else if (isOperator(postfix[i]))
             {
-                int right = toInteger(stack.peak());
+                double right = std::stod(stack.peak());
                 stack.pop();
 
-                int left = toInteger(stack.peak());
+                double left = std::stod(stack.peak());
                 stack.pop();
 
                 result = performOperation(left, right, postfix[i]);
                 stack.push(to_string(result));
                 prev = "";
             }
-            
         }
         return result;
     }
@@ -400,19 +386,21 @@ class InfixToPostFix{
 // main function to test the class
 int main()
 {
-    string infix;
-    cout<<"Enter an infix expression: ";
-    cin>>infix;
-    InfixToPostFix test("");
+    string infix = "(2+3+4+5+6^7)+9/2^4+7*6*9+10";
+    InfixToPostFix test(infix);
 
     try
     {
-        cout<<test.infixToPostfix()<<endl;
-        cout<<test.evaluatePostFix()<<endl;
+        string postfix = test.infixToPostfix();
+        double result = test.evaluatePostFix();
+        cout<<endl;
+        cout<<"Infix expression: "<<infix<<endl;
+        cout<<"Postfix expression: "<<postfix<<endl;
+        cout<<"Result: "<<result<<endl<<endl;
     }
     catch(const char* msg)
     {
-        cerr<<"\nERROR: \n\t"<<msg<<endl<<endl;
+        cerr<<"\nERROR: \t"<<msg<<endl<<endl;
     }
     return 0;
 }

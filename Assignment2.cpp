@@ -1,6 +1,5 @@
 #include <iostream>
 #include <cmath>
-#include <bits/stdc++.h>
 
 using std::cout;
 using std::string;
@@ -87,12 +86,6 @@ class Stack
 class InfixToPostFix{
 
     string infix = "";
-
-    public:
-
-    InfixToPostFix(string input){
-        infix = input;
-    }
 
     private:
     // checks if the character is a digit
@@ -223,17 +216,7 @@ class InfixToPostFix{
             }
             else if (isOperator(infix[i]))
             {
-                if (i == 0 && !((infix[i] == '+')||(infix[i] == '-')))
-                    return false;
-
-                if(prev == "(")
-                {
-                    if (!((infix[i] == '+')||(infix[i] == '-')))
-                    {
-                        return false;
-                    }
-                }
-                else if (isOperator(prev[0]))
+                if (isOperator(prev[0]))
                 {
                     return false;
                 }
@@ -270,12 +253,47 @@ class InfixToPostFix{
             throw "Infix string contains invalid number of operators and operands";
     }
 
+    string InfixCheck(string input)
+    {
+        // makes minor changes in a valid expression to convert it into infix
+        string infix;
+        char prev = ' ';
+        int count = 0;
+        // makes minor changes to convert input string to infix
+        for (int i=0; i<input.length(); i++)
+        {
+            if ((i==0)&&((input[i]=='+')||(input[i] == '-')))
+            {
+                infix += "0";
+            }
+            if ((infix[count] == '(')&&((input[i]=='+')||(input[i] == '-')))
+            {
+                infix += "0";
+            }
+
+            if (input[i] != ' ')
+            {
+                infix += input[i];
+                count++;
+            }
+        }
+        return infix;
+    }
     public:
+
+    InfixToPostFix(string input){
+        infix = InfixCheck(input);
+    }
+
     void setInfix(string input)
     {
         infix = input;
     }
     
+    string getInfix()
+    {
+        return infix;
+    }
     // converts the infix to postfix expression
     string infixToPostfix() 
     {
@@ -313,8 +331,6 @@ class InfixToPostFix{
             // on operator compare precedence and push the operator to stack
             else if (isOperator(infix[i]))
             {
-                if (((stack.peak() == "(")||(postfix==""))&&(infix[i]=='+'||infix[i]=='-')&&(prev == '('||prev==' '))
-                    postfix += "0";
                 // on equal precendance remove previous operator and add current to the stack
                 while(stack.peak() != "" && getPrecedance(infix[i]) <= getPrecedance(stack.peak()[0])) {
                     postfix += stack.peak();
@@ -386,15 +402,18 @@ class InfixToPostFix{
 // main function to test the class
 int main()
 {
-    string infix = "(2+3+4+5+6^7)+9/2^4+7*6*9+10";
-    InfixToPostFix test(infix);
+    string infix = "20+40/4+56-(50+6)";
+    // string infix = "(2+3+4+5+6^7)+9/2^4+7*6*9+10";
+    // string infix = "+9 * (++12)";
+    // string infix = "+9 * (+12)";
 
+    InfixToPostFix test(infix);
     try
     {
         string postfix = test.infixToPostfix();
         double result = test.evaluatePostFix();
         cout<<endl;
-        cout<<"Infix expression: "<<infix<<endl;
+        cout<<"Infix expression: "<<test.getInfix()<<endl;
         cout<<"Postfix expression: "<<postfix<<endl;
         cout<<"Result: "<<result<<endl<<endl;
     }

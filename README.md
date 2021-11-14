@@ -1,4 +1,4 @@
-# Postfix to Infix Conversion
+# Infix to Postfix Conversion
 
 ## Working
 

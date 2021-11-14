@@ -17,12 +17,7 @@ A given infix expression is valid if:
 
 Tests: 
 
-![image](https://user-images.githubusercontent.com/74109263/141682907-160d0765-9bea-4fe4-b12d-55e854ef5393.png)
-
-![image](https://user-images.githubusercontent.com/74109263/141688281-0314929c-7b80-4d14-bd1e-78a1e4b47a2a.png)
-
-![image](https://user-images.githubusercontent.com/74109263/141682995-a2cb35af-707a-4de9-9524-e2439d4654d8.png)
-
-![image](https://user-images.githubusercontent.com/74109263/141688215-c40ae8c6-e885-4fd8-b8a1-c5e1bab2d35a.png)
-
-![image](https://user-images.githubusercontent.com/74109263/141688249-245529a6-a25a-4fad-835c-622263befcb6.png)
+![image](https://user-images.githubusercontent.com/74109263/141688409-b14402d7-2dd9-4959-8c11-f913d2ab4e54.png)
+![image](https://user-images.githubusercontent.com/74109263/141688420-de3df5a4-a182-4668-937d-6d414be22761.png)
+![image](https://user-images.githubusercontent.com/74109263/141688439-3b380926-2d5c-4ed6-944d-65f7b7d2a6df.png)
+![image](https://user-images.githubusercontent.com/74109263/141688459-b073871d-5a27-46b0-90c6-99633b13c3c4.png)

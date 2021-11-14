@@ -1,5 +1,5 @@
-#include<iostream>
-#include<sstream>
+#include <iostream>
+#include <cmath>
 
 using namespace std;
 
@@ -53,6 +53,16 @@ class Stack
             growArray();
         length ++;
         array[length] = element;
+    }
+
+    void push(char element)
+    {
+        if (isFull())
+            growArray();
+        length ++;
+        string temp = "";
+        temp += element;
+        array[length] = temp;
     }
 
     void pop()
@@ -134,10 +144,7 @@ string infixToPostfix(string infix) {
                 stack.pop(); 
             }
             stack.push(current);
-            if (isDigit(infix[i+1]))
-            {
-                postfix += " ";
-            }
+            postfix += " ";
         }
 
     }
@@ -155,7 +162,7 @@ int performOperation(int left, int right, char operation)
     switch(operation)
     {
         case '^':
-            return left ^ right;
+            return pow(double(left),double(right));
         case '+':
             return left + right;
         case '-':
@@ -242,11 +249,129 @@ int evaluatePostFix(string postfix)
     return result;
 }
 
+// string validation funcitons
+bool valid_num_of_Brackets(string input)
+{
+    Stack stack;
+    // checking the string input
+    for (int i=0; i<input.length(); i++)
+    {
+        // if the character is opening brace then add it to the stack
+        if (input[i] == '{' || input[i] == '[' || input[i] == '(')
+            stack.push(input[i]);
+
+        // if the character is a closing brace and matches with character in the stack then pop character from the stack
+        if ((input[i] == '}' && stack.peak() == "{")||
+            (input[i] == ')' && stack.peak() == "(")||
+            (input[i] == ']' && stack.peak() == "["))
+        {
+            stack.pop();
+        }
+        // if the expression contains closing braces without matching closing brace in stack then expression is invalid
+        else if (input[i] == '}' || input[i] == ')' || input[i] == ']')
+        {
+            return false;
+        }
+    }
+    // if the expression contains any opening braces without matching closing braces in stack then expression is invalid
+    if (!(stack.peak() == ""))
+    {
+        return false; 
+    }
+    return true;
+}
+
+bool valid_Characters(string infix)
+{
+    for (int i=0; i<infix.length();i++)
+    {
+        if ((isDigit(infix[i]))||
+            (infix[i] == '{' || infix[i] == '}')||
+            (infix[i] == '[' || infix[i] == ']')||
+            (infix[i] == '(' || infix[i] == ')')||
+            (isOperator(infix[i])))
+                continue;
+        return false;
+    }
+    return true;
+}
+
+bool valid_num_of_Operators(string infix)
+{
+    string prev = "";
+    Stack stack;
+    
+    if (isOperator(infix[0]) || isOperator(infix[infix.length()-1]))
+        return false;
+    
+    // convert the stirng to stack
+    for (int i=0; i < infix.length(); i++)
+    {
+        if (isDigit(infix[i]) && isDigit(infix[i-1]))
+        {
+            stack.pop();
+            prev += infix[i];
+            stack.push(prev);
+        }
+        else if (isDigit(infix[i]))
+        {
+            prev = "";
+            prev += infix[i];
+            stack.push(prev);
+        }
+        else if (infix[i] == ' ')
+        {
+            prev = "";
+        }
+        else if (isOperator(infix[i]))
+        {
+            if (isOperator(stack.peak()[0]))
+            {
+                return false;
+            }
+            else
+            {
+                stack.push(infix[i]);
+            }
+        }
+    }
+    return true;
+}
+
+void vaildateInfix(string infix)
+{
+    // infix string should not be empty
+    if ((infix == "")||(infix == " "))
+        throw "Infix string cannot be empty";
+    // infix string should not begin with operator
+    if (isOperator(infix[0]))
+        throw "Infix string cannot begin with an operator";
+    // infix string should have valid number of braces
+    if (!valid_num_of_Brackets(infix))
+        throw "Infix string contains invalid number of brackets";
+    // infix string should not have invalid characters
+    if (!valid_Characters(infix))
+        throw "Infix string contains invalid characters\nNote that special only numbers, operators (+,-,*,/) and brackets ('{}','[]','()')";
+    // infix string should have number of operators (two operators for every operand)
+    if (!valid_num_of_Operators(infix))
+        throw "Infix string contains invalid number of operators and operands";
+}
+
 int main()
 {
-    string infix = "(12+28)*(31+42)+7-9";
-    cout<<infix<<endl<<endl;
-    string postfix = infixToPostfix(infix);
-    cout<<postfix<<endl;
-    cout<<evaluatePostFix(postfix)<<endl<<endl;
+    try
+    {    
+        string infix = "(((1*(2+3))-3)+4)*5";
+        vaildateInfix(infix);
+        cout<<"Infix Expression: "<<infix<<endl<<endl;
+        string postfix = infixToPostfix(infix);
+        cout<<"Postfix Expression: "<<postfix<<endl;
+        cout<<"Evaluation: "<<evaluatePostFix(postfix)<<endl<<endl;
+    }
+    catch (const char* msg) 
+    {
+        cerr << "\nERROR: " <<msg << endl<< endl;
+    }
+
+    return 0;
 }

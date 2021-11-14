@@ -153,7 +153,7 @@ class InfixToPostFix{
         for (int i=0; i<input.length(); i++)
         {
             // if the character is opening brace then add it to the stack
-            if (input[i] == '{' || input[i] == '[' || input[i] == '(')
+            if (input[i] == '(')
                 stack.push(input[i]);
 
             // if the character is a closing brace and matches with character in the stack then pop character from the stack
